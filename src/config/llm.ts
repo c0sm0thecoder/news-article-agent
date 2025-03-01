@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getEnvironmentVariables } from "./environment";
 
 let genAI: GoogleGenerativeAI;
-const MODEL_NAME = 'gemini-1.5-pro';
+const MODEL_NAME = 'gemini-pro';
 
 export function initGemini(): GoogleGenerativeAI {
     const env = getEnvironmentVariables();
@@ -21,7 +21,7 @@ export async function generateEmbeddings(text: string): Promise<number[]> {
     if (!genAI) {
         initGemini();
     }
-    const embeddingModel = genAI.getGenerativeModel({model: 'text-embedding-004'});
+    const embeddingModel = genAI.getGenerativeModel({model: 'embedding-001'});
     const result = await embeddingModel.embedContent(text);
     return result.embedding.values;
 }

@@ -3,23 +3,70 @@ import { Article } from "../models/article";
 import { logger } from "../utils/logger";
 import { vectorizeQuery } from "./vectorizer";
 
-export async function retrieveRelevantArticles(query: string, limit: number = 5): Promise<Article[]> {
+export interface ChunkResult {
+    articleId: number;
+    chunkId: number;
+    content: string;
+    metadata: any;
+    distance: number;
+}
+
+export async function retrieveRelevantChunks(query: string, limit: number = 10): Promise<ChunkResult[]> {
     const pool = getPool();
 
     try {
-        const vectorizedQuery = await vectorizeQuery(query);
+        // Get the vector embedding for the query
+        const embedding = await vectorizeQuery(query);
+        
+        // Format the vector correctly for pgvector - must use square brackets
+        const vectorString = `[${embedding.join(',')}]`;
+        
+        // Execute the similarity search query on chunks
+        const { rows } = await pool.query(`
+            SELECT c.id as chunk_id, c.article_id, c.content, c.metadata, 
+                   c.vector <-> $1 as distance
+            FROM chunks c
+            ORDER BY distance
+            LIMIT $2
+        `, [vectorString, limit]);
+        
+        // Process the results
+        return rows.map(row => ({
+            chunkId: row.chunk_id,
+            articleId: row.article_id,
+            content: row.content,
+            metadata: row.metadata,
+            distance: row.distance
+        }));
+    } catch (err) {
+        logger.error('Error retrieving chunks: ', err);
+        throw new Error('Failed to retrieve chunks');
+    }
+}
 
-        const result = await pool.query(
-            `SELECT id, title, content, url, date, source
+export async function retrieveRelevantArticles(query: string, limit: number = 5): Promise<Article[]> {
+    try {
+        // First get relevant chunks
+        const chunks = await retrieveRelevantChunks(query, limit * 2);
+        
+        // Get unique article IDs from the chunks
+        const articleIds = [...new Set(chunks.map(chunk => chunk.articleId))].slice(0, limit);
+        
+        if (articleIds.length === 0) {
+            return [];
+        }
+        
+        // Fetch the full articles for those IDs
+        const pool = getPool();
+        const articleIdPlaceholders = articleIds.map((_, i) => `$${i + 1}`).join(',');
+        
+        const { rows } = await pool.query(`
+            SELECT id, title, content, url, date, source
             FROM articles
-            ORDER BY vector <-> $1
-            LIMIT $2`,
-            [vectorizeQuery, limit]
-        );
-
-        logger.info(`Retrieved ${limit} articles`)
-
-        return result.rows.map(row => ({
+            WHERE id IN (${articleIdPlaceholders})
+        `, articleIds);
+        
+        return rows.map(row => ({
             id: row.id,
             title: row.title,
             content: row.content,

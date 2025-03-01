@@ -1,7 +1,8 @@
+// Modify in src/rag/generator.ts
 import { logger } from "../utils/logger";
 import { extractUrls } from "../utils/link-parser";
 import { Article } from "../models/article";
-import { retrieveArticleByURL, retrieveRelevantArticles } from "./retriever";
+import { retrieveArticleByURL, retrieveRelevantArticles, retrieveRelevantChunks } from "./retriever";
 import { NewsMessage } from "../models/message";
 import { processNewLink } from "../ingest/content-extractor";
 import { QueryResult, Source } from "../models/query";
@@ -11,6 +12,7 @@ export async function generateAnswer(query: string): Promise<QueryResult> {
     try {
         const urls = extractUrls(query);
         let relevantArticles: Article[] = [];
+        let chunkContext = '';
 
         if (urls.length > 0) {
             try {
@@ -38,6 +40,15 @@ export async function generateAnswer(query: string): Promise<QueryResult> {
                 }
             }
         } else {
+            // Get chunks first
+            const chunks = await retrieveRelevantChunks(query, 8);
+            
+            // Create context from chunks
+            chunkContext = chunks.map(chunk => 
+                `CHUNK: ${chunk.content}\nSOURCE: ${chunk.metadata.source}\nTITLE: ${chunk.metadata.title}\nURL: ${chunk.metadata.url}\n\n`
+            ).join('---\n');
+            
+            // Also get the full articles for sources
             relevantArticles = await retrieveRelevantArticles(query, 5);
         }
 
@@ -55,9 +66,14 @@ export async function generateAnswer(query: string): Promise<QueryResult> {
             };
         }
 
-        const context = relevantArticles.map(article =>
-            `TITLE: ${article.title}\nSOURCE: ${article.source}\nDATE: ${article.date}\nCONTENT: ${article.content.substring(0, 1500)}\nURL: ${article.url}\n\n`
-        ).join('---\n');
+        // Use chunk context if available, otherwise fall back to article context
+        let context = chunkContext;
+        
+        if (!context) {
+            context = relevantArticles.map(article =>
+                `TITLE: ${article.title}\nSOURCE: ${article.source}\nDATE: ${article.date}\nCONTENT: ${article.content.substring(0, 1500)}\nURL: ${article.url}\n\n`
+            ).join('---\n');
+        }
 
         const model = getGeminiModel();
 

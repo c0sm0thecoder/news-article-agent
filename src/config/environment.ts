@@ -39,14 +39,14 @@ export interface EnvironmentVariables {
       DB_USER: process.env.DB_USER || 'postgres',
       DB_PASSWORD: process.env.DB_PASSWORD || 'postgres',
       
-      KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
-      KAFKA_BROKER: process.env.KAFKA_BROKER,
-      KAFKA_TOPIC_NAME: process.env.KAFKA_TOPIC_NAME,
-      KAFKA_GROUP_ID_PREFIX: process.env.KAFKA_GROUP_ID_PREFIX,
-      KAFKA_SSL: process.env.KAFKA_SSL,
-      KAFKA_SASL: process.env.KAFKA_SASL,
-      KAFKA_USERNAME: process.env.KAFKA_USERNAME,
-      KAFKA_PASSWORD: process.env.KAFKA_PASSWORD,
+      KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID || '',
+      KAFKA_BROKER: process.env.KAFKA_BROKER || '',
+      KAFKA_TOPIC_NAME: process.env.KAFKA_TOPIC_NAME || '',
+      KAFKA_GROUP_ID_PREFIX: process.env.KAFKA_GROUP_ID_PREFIX || '',
+      KAFKA_SSL: process.env.KAFKA_SSL || '',
+      KAFKA_SASL: process.env.KAFKA_SASL || '',
+      KAFKA_USERNAME: process.env.KAFKA_USERNAME || '',
+      KAFKA_PASSWORD: process.env.KAFKA_PASSWORD || '',
       
       GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
       
