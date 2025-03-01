@@ -2,6 +2,7 @@ import axios from "axios";
 import cheerio from "cheerio";
 import { NewsMessage } from "../models/message";
 import { cleanArticleContent } from "./content_cleaner";
+import { storeArticle } from "../rag/vectorizer";
 
 export async function processNewLink(newsMessage: NewsMessage): Promise<void> {
     try {

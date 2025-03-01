@@ -10,10 +10,17 @@ export function createKafkaClient(): Kafka {
         ssl: env.KAFKA_SSL === 'true',
         sasl: env.KAFKA_SASL === 'true' ? {
             mechanism: 'plain',
-            username: env.KAFKA_USERNAME || '',
-            password: env.KAFKA_PASSWORD || ''
+            username: env.KAFKA_USERNAME,
+            password: env.KAFKA_PASSWORD,
         } : undefined
     };
 
-    return new Kafka(kafkaConfig)
+    return new Kafka(kafkaConfig);
+}
+
+export async function createConsumer(groupId: string): Promise<Consumer> {
+    const kafka = createKafkaClient();
+    const consumer = kafka.consumer({ groupId });
+    await consumer.connect();
+    return consumer;
 }

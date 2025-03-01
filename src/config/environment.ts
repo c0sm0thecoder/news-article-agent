@@ -33,14 +33,12 @@ export interface EnvironmentVariables {
       PORT: process.env.PORT || '4000',
       NODE_ENV: process.env.NODE_ENV || 'development',
       
-      // Database
       DB_HOST: process.env.DB_HOST || 'localhost',
       DB_PORT: process.env.DB_PORT || '5432',
       DB_NAME: process.env.DB_NAME || 'news_rag',
       DB_USER: process.env.DB_USER || 'postgres',
       DB_PASSWORD: process.env.DB_PASSWORD || 'postgres',
       
-      // Kafka
       KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID,
       KAFKA_BROKER: process.env.KAFKA_BROKER,
       KAFKA_TOPIC_NAME: process.env.KAFKA_TOPIC_NAME,
@@ -50,10 +48,8 @@ export interface EnvironmentVariables {
       KAFKA_USERNAME: process.env.KAFKA_USERNAME,
       KAFKA_PASSWORD: process.env.KAFKA_PASSWORD,
       
-      // LLM
       GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
       
-      // Langfuse
       LANGFUSE_PUBLIC_KEY: process.env.LANGFUSE_PUBLIC_KEY || '',
       LANGFUSE_SECRET_KEY: process.env.LANGFUSE_SECRET_KEY || '',
       LANGFUSE_HOST: process.env.LANGFUSE_HOST,

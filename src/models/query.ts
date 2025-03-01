@@ -3,7 +3,7 @@ export interface QueryInput {
 }
 
 export interface QueryResult {
-    articles: string;
+    answer: string;
     sources: Source[];
 }
 
@@ -11,4 +11,5 @@ export interface Source {
     title: string;
     url: string;
     date: string;
+    source: string;
 }
