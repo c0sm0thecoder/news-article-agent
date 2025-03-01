@@ -18,11 +18,11 @@ This application processes news articles by:
 ✅ Vector embeddings storage in PostgreSQL
 ✅ Semantic search based on vector similarity
 ✅ Basic retrieval pipeline
-✅ GraphQL API (implementation incomplete)
+✅ GraphQL API
+✅ Kafka integration
 
 **Not Working / In Progress**
 ❌ Docker setup (configuration issues)
-❌ Kafka integration (can be used as alternative to CSV ingestion)
 
 **Setup Instructions**
 **Prerequisites**
