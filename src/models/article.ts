@@ -4,9 +4,10 @@ export interface Article {
   content: string;
   url: string;
   date: string;
+  source: string;
   vector?: number[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export interface ArticleInput {
@@ -18,4 +19,5 @@ export interface CleanedArticle {
     content: string;
     url: string;
     date: string;
+    source: string;
 }
